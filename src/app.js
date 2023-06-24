@@ -10,6 +10,8 @@ const usuarios = [];
 
 const tweets = []; 
 
+const userTweets = [];
+
 let avatarUser = '';
 
 app.post('/sign-up', (req, res) => {
@@ -24,13 +26,13 @@ app.post('/sign-up', (req, res) => {
     }
     avatarUser = avatar;
     usuarios.push(usuario);
-    res.send('OK');
+    res.status(201).send('OK');
 });
 
 app.post('/tweets', (req, res) => {
     const {username, tweet} = req.body;
     if(usuarios.length === 0){
-        res.send('UNAUTHORIZED');
+        res.status(401).send('UNAUTHORIZED');
         return;
     }
     if(!username || !tweet || typeof(username) !== 'string' || typeof(tweet) !== 'string'){
@@ -43,7 +45,7 @@ app.post('/tweets', (req, res) => {
         avatar: avatarUser
     }
     tweets.push(userTweet);
-    res.send('OK');
+    res.status(201).send('OK');
 })
 
 app.get('/tweets', (req, res) => {
@@ -58,5 +60,20 @@ app.get('/tweets', (req, res) => {
     }
     res.send(ultimosTweets)
 }) 
+
+app.get('/tweets/:USERNAME', (req, res) => {
+    const {USERNAME} = req.params;
+    for(let i = 0; i < tweets.length; i++){
+        if(tweets[i].username === USERNAME){
+            const utweet = {
+                username: tweets[i].username,
+                avatar: tweets[i].avatar,
+                tweet: tweets[i].tweet
+            }
+            userTweets.push(utweet);
+        }
+    }
+    res.send(userTweets);
+})
 
 app.listen(5000, () => console.log('O servidor está rodando na porta 5000'));
