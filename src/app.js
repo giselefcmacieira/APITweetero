@@ -49,16 +49,48 @@ app.post('/tweets', (req, res) => {
 })
 
 app.get('/tweets', (req, res) => {
+    const {page} = req.query;
     const numTweets = tweets.length;
     const ultimosTweets = [];
-    for(let i = (numTweets - 1); i >= (numTweets - 10); i--){
-        if(i >= 0){
-            ultimosTweets.push(tweets[i]);
-        }else{
-            break;
-        }  
+    if(Number(page) < 1){
+        res.status(400).send('Informe uma página válida!');
+        return
     }
-    res.send(ultimosTweets)
+    if(Number(page) === 1){
+        for(let i = (numTweets - 1); i >= (numTweets - 10); i--){
+            if(i >= 0){
+                ultimosTweets.push(tweets[i]);
+            }else{
+                break;
+            }  
+        }
+        res.send(ultimosTweets)
+        return
+    }
+    if(Number(page) > 1){
+        const p = ((page * 10) - 9);
+        for(let i = (numTweets - p); i >= (numTweets - (page*10)); i--){
+            if(i >= 0){
+                ultimosTweets.push(tweets[i]);
+            }else{
+                break;
+            }  
+        }
+        res.send(ultimosTweets)
+        return
+    }
+    if(page === undefined){
+        for(let i = (numTweets - 1); i >= (numTweets - 10); i--){
+            if(i >= 0){
+                ultimosTweets.push(tweets[i]);
+            }else{
+                break;
+            }  
+        }
+        res.send(ultimosTweets)
+        return
+    }
+    
 }) 
 
 app.get('/tweets/:USERNAME', (req, res) => {
